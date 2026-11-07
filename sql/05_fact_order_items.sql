@@ -1,0 +1,21 @@
+-- 05 · TABLA DE HECHOS
+--
+-- Grano: una fila por ÍTEM de pedido (order_id + order_item_id).
+-- Define el grano antes de escribir SQL: todo lo demás depende de esto.
+--
+-- Columnas:
+--   order_id, order_item_id
+--   customer_key        ¡la versión del cliente VIGENTE en la fecha de compra!
+--                       Pista: une con dim_customer por customer_unique_id y
+--                       purchased_at >= valid_from AND purchased_at < valid_to
+--   product_key, seller_key
+--   purchase_date_key   AAAAMMDD de la compra, apunta a dim_date
+--   order_status
+--   price, freight_value
+--   delivery_days       días entre compra y entrega al cliente (NULL si no se
+--                       entregó). Pista: date_diff('day', inicio, fin)
+--
+-- Revisa al final: ¿la tabla tiene exactamente las mismas filas que
+-- stg_order_items? Si tiene más, algún JOIN está duplicando.
+
+-- TODO: CREATE OR REPLACE TABLE fact_order_items AS ...

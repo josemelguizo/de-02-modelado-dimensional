@@ -1,0 +1,21 @@
+-- 02 · DIMENSIÓN FECHA
+--
+-- Objetivo: una fila por cada día entre la primera y la última compra
+-- (stg_orders.purchased_at), sin huecos, aunque ese día no haya pedidos.
+--
+-- Columnas:
+--   date_key    INTEGER  formato AAAAMMDD, ej. 20180310 (llave de la dimensión)
+--   date        DATE
+--   year, quarter, month, day
+--   weekday     1 = lunes ... 7 = domingo (ISO)
+--   is_weekend  BOOLEAN
+--
+-- Pistas:
+--   * generate_series(inicio, fin, INTERVAL 1 DAY) genera el rango de fechas.
+--   * strftime(fecha, '%Y%m%d') convierte una fecha a texto; luego CAST a INTEGER.
+--   * Funciones útiles de DuckDB: year(), quarter(), month(), day(), isodow().
+--
+-- ¿Por qué una tabla de fechas si la fecha ya está en el pedido? Escribe tu
+-- respuesta en el README cuando termines.
+
+-- TODO: CREATE OR REPLACE TABLE dim_date AS ...

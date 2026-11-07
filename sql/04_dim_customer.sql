@@ -1,0 +1,31 @@
+-- 04 · DIMENSIÓN CLIENTE CON HISTORIAL (SCD TIPO 2)
+--
+-- Este es el corazón del proyecto.
+--
+-- En Olist, cada pedido tiene su propio customer_id, pero la persona real es
+-- customer_unique_id. Si una persona compró desde São Paulo y meses después
+-- desde Rio, queremos conservar AMBAS direcciones, cada una con su periodo de
+-- vigencia. Eso es una "Slowly Changing Dimension tipo 2".
+--
+-- Una fila por cada VERSIÓN de la dirección de un cliente:
+--   customer_key        llave sustituta, única por versión
+--   customer_unique_id  llave natural (la persona)
+--   zip_prefix, city, state
+--   valid_from          primera versión: TIMESTAMP '1900-01-01'
+--                       siguientes: la fecha de compra donde cambió la dirección
+--   valid_to            el valid_from de la siguiente versión,
+--                       o TIMESTAMP '9999-12-31' si es la actual
+--   is_current          TRUE solo en la versión actual
+--
+-- Reglas:
+--   * Comprar dos veces desde la misma dirección NO crea otra versión.
+--   * Una dirección cambia si cambia zip_prefix, city o state.
+--
+-- Pistas (puedes resolverlo en varios CTE con WITH):
+--   1. Une stg_orders con stg_customers para tener la dirección en cada compra.
+--   2. LAG(...) OVER (PARTITION BY customer_unique_id ORDER BY purchased_at)
+--      te da la dirección de la compra anterior. Quédate con las filas donde
+--      no hay anterior o la dirección cambió.
+--   3. LEAD(...) sobre esas filas te da cuándo termina cada versión.
+
+-- TODO: CREATE OR REPLACE TABLE dim_customer AS ...
